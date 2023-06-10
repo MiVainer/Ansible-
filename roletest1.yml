@@ -1,0 +1,9 @@
+---
+
+- hosts:
+
+  - linux2
+
+  roles:
+
+  - nginx-test

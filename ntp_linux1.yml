@@ -1,0 +1,35 @@
+---
+
+- name: ntp_client
+  hosts: linux1
+  become: yes
+
+
+  tasks:
+  - name: install ntp-client
+    apt:
+     pkg: "{{ item }}"
+
+    with_items:
+    - "ntpdate"
+    - "tzdata"
+
+  - name: "Add NTP-client to crontab"
+    cron:
+       name: "NTP-Client"
+       hour: "*/1"
+       job: "/usr/sbin/ntpdate pool.ntp.org"
+
+  - name: If /etc/localtime not symlink - delete this
+    file:
+       path: /etc/localtime
+       state: absent
+    when: localtime.stat.islnk is defined and localtime.stat.islnk == False
+
+  - name: Set Timezone to Europe/Moscow
+    file:
+       dest: "/etc/localtime"
+       src: "/usr/share/zoneinfo/Europe/Moscow"
+       state: link
+
+

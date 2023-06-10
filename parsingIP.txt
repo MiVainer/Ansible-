@@ -1,0 +1,4 @@
+cat terraform.tfstate.backup | jq '.resources[0].instances[0].attributes.network_interface[0].nat_ip_address' | grep -o "[0-9.]\+"
+
+извлекаем внешний ip адрес из файла terraform.tfstate, возможно использовать в переменных
+

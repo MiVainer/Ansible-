@@ -1,0 +1,12 @@
+---
+
+
+ - name: nginxrestart
+
+   service:
+
+      name: "nginx"
+
+      state: "restarted"
+
+   become: yes

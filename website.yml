@@ -1,0 +1,39 @@
+---
+
+- name: create to website
+  hosts: linux2
+  become: yes
+
+  vars:
+  - siteslist:
+    - "www.test1.com"
+    - "www.test2.com"
+    - "www.test3.com"
+
+  tasks:
+  - name: Install nginx
+    apt:
+       pkg: nginx
+
+  - name: Create dir for websites
+    file:
+       path: /var/www/{{ item }}
+       state: directory
+    with_items: "{{ siteslist }}"
+
+  - name: Create nginx config files
+    template:
+       src: "testsite.j2"
+       dest: "/etc/nginx/sites-enabled/{{ item }}.conf"
+
+    with_items: "{{ siteslist }}"
+
+    notify: nginxrestart
+
+  handlers:
+  - name: nginxrestart
+    service:
+       name: "nginx"
+       state: "restarted"
+
+
