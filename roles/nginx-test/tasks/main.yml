@@ -1,35 +1,82 @@
 ---
 
-  - name: Install nginx
+- name: For Debian
+  block: -----Debian------
+    - name: Install nginx to Deb
 
-    apt:
+      apt:
 
-       pkg: nginx
+         pkg: nginx
 
-    become: yes
+      become: yes
 
-  - name: Create dir for websites
+    - name: Create dir for websites
 
-    file:
+      file:
 
-       path: /var/www/{{ item }}
+         path: /var/www/{{ item }}
 
-       state: directory
+         state: directory
 
-    become: yes
+      become: yes
 
-    with_items: "{{ siteslist }}"
+      with_items: "{{ siteslist }}"
 
-  - name: Create nginx config files
+    - name: Create nginx config files
 
-    template:
+      template:
 
-       src: "testsite.j2"
+         src: "testsite.j2"
 
-       dest: "/etc/nginx/sites-enabled/{{ item }}.conf"
+         dest: "/etc/nginx/sites-enabled/{{ item }}.conf"
 
-    with_items: "{{ siteslist }}"
+      with_items: "{{ siteslist }}"
 
-    become: yes
+      become: yes
 
-    notify: nginxrestart
+      notify: nginxrestart
+  when: ansible_os_family == "Debian" or ansible_os_family == "Ubuntu"
+
+
+- name: For CentOS
+  block: ----CentOS----
+    - name: Install EPEL
+      yum:
+        pkg: epel-release
+      beckome: yes
+
+    - name: Install nginx to CentOS
+
+      apt:
+
+         pkg: nginx
+
+      become: yes
+
+    - name: Create dir for websites
+
+      file:
+
+         path: /var/www/{{ item }}
+
+         state: directory
+
+      become: yes
+
+      with_items: "{{ siteslist }}"
+
+    - name: Create nginx config files
+
+      template:
+
+         src: "testsite.j2"
+
+         dest: "/etc/nginx/sites-enabled/{{ item }}.conf"
+
+      with_items: "{{ siteslist }}"
+
+      become: yes
+
+      notify: nginxrestart
+  when: ansible_os_family == "CentOS" or ansible_os_family == "RedHat"
+
